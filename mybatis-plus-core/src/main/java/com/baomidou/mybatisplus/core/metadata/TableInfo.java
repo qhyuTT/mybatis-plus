@@ -28,6 +28,7 @@ import org.apache.ibatis.mapping.ResultFlag;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.reflection.Reflector;
+import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.session.Configuration;
 
 import java.lang.reflect.Constructor;
@@ -101,7 +102,6 @@ public class TableInfo implements Constants {
      * MybatisConfiguration 标记 (Configuration内存地址值)
      */
     @Getter
-    @Setter(AccessLevel.NONE)
     private Configuration configuration;
     /**
      * 是否开启下划线转驼峰
@@ -183,6 +183,16 @@ public class TableInfo implements Constants {
     private Reflector reflector;
 
     /**
+     * @param entityType 实体类型
+     * @deprecated 3.4.4 {@link #TableInfo(Configuration, Class)}
+     */
+    @Deprecated
+    public TableInfo(Class<?> entityType) {
+        this.entityType = entityType;
+        this.reflector = SystemMetaObject.NULL_META_OBJECT.getReflectorFactory().findForClass(entityType);
+    }
+
+    /**
      * @param configuration 配置对象
      * @param entityType    实体类型
      * @since 3.4.4
@@ -204,6 +214,18 @@ public class TableInfo implements Constants {
     @Deprecated
     public String getSqlStatement(String sqlMethod) {
         return currentNamespace + DOT + sqlMethod;
+    }
+
+    /**
+     * @deprecated 3.4.4 {@link #TableInfo(Configuration, Class)}
+     * 设置 Configuration
+     */
+    @Deprecated
+    void setConfiguration(Configuration configuration) {
+        Assert.notNull(configuration, "Error: You need Initialize MybatisConfiguration !");
+        this.configuration = configuration;
+        this.underCamel = configuration.isMapUnderscoreToCamelCase();
+        this.reflector = configuration.getReflectorFactory().findForClass(this.entityType);
     }
 
     /**
@@ -297,16 +319,14 @@ public class TableInfo implements Constants {
      *
      * @return sql 脚本片段
      */
-    public String getKeyInsertSqlColumn(final boolean batch, final String prefix, final boolean newLine) {
+    public String getKeyInsertSqlColumn(final boolean batch, final boolean newLine) {
         if (havePK()) {
-            final String newPrefix = prefix == null ? EMPTY : prefix;
-            final String prefixKeyProperty = newPrefix + keyProperty;
             if (idType == IdType.AUTO) {
                 if (batch) {
                     // 批量插入必须返回空自增情况下
                     return EMPTY;
                 }
-                return SqlScriptUtils.convertIf(keyColumn + COMMA, String.format("%s != null", prefixKeyProperty), newLine);
+                return SqlScriptUtils.convertIf(keyColumn + COMMA, String.format("%s != null", keyProperty), newLine);
             }
             return keyColumn + COMMA + (newLine ? NEWLINE : EMPTY);
         }
@@ -339,7 +359,7 @@ public class TableInfo implements Constants {
      */
     public String getAllInsertSqlColumnMaybeIf(final String prefix) {
         final String newPrefix = prefix == null ? EMPTY : prefix;
-        return getKeyInsertSqlColumn(false, newPrefix, true) + fieldList.stream().map(i -> i.getInsertSqlColumnMaybeIf(newPrefix))
+        return getKeyInsertSqlColumn(false, true) + fieldList.stream().map(i -> i.getInsertSqlColumnMaybeIf(newPrefix))
             .filter(Objects::nonNull).collect(joining(NEWLINE));
     }
 

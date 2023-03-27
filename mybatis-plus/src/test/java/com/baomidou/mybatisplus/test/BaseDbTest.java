@@ -20,6 +20,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 import org.apache.ibatis.type.TypeReference;
 import org.h2.Driver;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
@@ -100,7 +101,7 @@ public abstract class BaseDbTest<T> extends TypeReference<T> {
         return dataSource;
     }
 
-    protected SqlSession sqlSession(ExecutorType type) {
+    protected SqlSession sqlSession(@Nullable ExecutorType type) {
         return sqlSessionFactory.openSession(type);
     }
 

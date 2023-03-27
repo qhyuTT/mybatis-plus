@@ -118,6 +118,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
             environmentsElement(root.evalNode("environments"));
             databaseIdProviderElement(root.evalNode("databaseIdProvider"));
             typeHandlerElement(root.evalNode("typeHandlers"));
+            // 这里是否就是mapper.xml文件或者是mapper接口的解析
             mapperElement(root.evalNode("mappers"));
         } catch (Exception e) {
             throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -371,6 +372,7 @@ public class MybatisXMLConfigBuilder extends BaseBuilder {
             for (XNode child : parent.getChildren()) {
                 if ("package".equals(child.getName())) {
                     String mapperPackage = child.getStringAttribute("name");
+                    //
                     configuration.addMappers(mapperPackage);
                 } else {
                     String resource = child.getStringAttribute("resource");

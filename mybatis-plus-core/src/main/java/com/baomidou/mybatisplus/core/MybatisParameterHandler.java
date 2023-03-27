@@ -146,10 +146,8 @@ public class MybatisParameterHandler implements ParameterHandler {
                         } else {
                             throw new MybatisPlusException("Key type '" + keyType + "' not supported");
                         }
-                    } else if (String.class.isAssignableFrom(keyType)) {
-                        metaObject.setValue(keyProperty, identifierGenerator.nextId(entity).toString());
                     } else {
-                        metaObject.setValue(keyProperty, identifierGenerator.nextId(entity));
+                        metaObject.setValue(keyProperty, identifierGenerator.nextId(entity).toString());
                     }
                 } else if (idType.getKey() == IdType.ASSIGN_UUID.getKey()) {
                     metaObject.setValue(keyProperty, identifierGenerator.nextUUID(entity));

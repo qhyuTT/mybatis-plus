@@ -16,7 +16,6 @@
 package com.baomidou.mybatisplus.core;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.plugins.IgnoreStrategy;
 import com.baomidou.mybatisplus.core.plugins.InterceptorIgnoreHelper;
 import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -91,14 +90,19 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
     @Override
     public void parse() {
         String resource = type.toString();
+        // 避免重复加载
         if (!configuration.isResourceLoaded(resource)) {
+            // 加载对应的xml文件，根据class文件对应的xml文件利用XMLMapperBuilder解析
             loadXmlResource();
+            // 避免重复加载
             configuration.addLoadedResource(resource);
             String mapperName = type.getName();
+            // 设置命名空间
             assistant.setCurrentNamespace(mapperName);
+            // 解析二级缓存
             parseCache();
             parseCacheRef();
-            IgnoreStrategy ignoreStrategy = InterceptorIgnoreHelper.initSqlParserInfoCache(type);
+            InterceptorIgnoreHelper.InterceptorIgnoreCache cache = InterceptorIgnoreHelper.initSqlParserInfoCache(type);
             for (Method method : type.getMethods()) {
                 if (!canHaveStatement(method)) {
                     continue;
@@ -109,7 +113,8 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
                 }
                 try {
                     // TODO 加入 注解过滤缓存
-                    InterceptorIgnoreHelper.initSqlParserInfoCache(ignoreStrategy, mapperName, method);
+                    InterceptorIgnoreHelper.initSqlParserInfoCache(cache, mapperName, method);
+                    // 解析方法上的注解方法
                     parseStatement(method);
                 } catch (IncompleteElementException e) {
                     // TODO 使用 MybatisMethodResolver 而不是 MethodResolver
@@ -289,9 +294,11 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
     }
 
     void parseStatement(Method method) {
+        // 获取参数类型
         final Class<?> parameterTypeClass = getParameterType(method);
         final LanguageDriver languageDriver = getLanguageDriver(method);
 
+        // 获取方法上面的所有的注解包装类，进行遍历
         getAnnotationWrapper(method, true, statementAnnotationTypes).ifPresent(statementAnnotation -> {
             final SqlSource sqlSource = buildSqlSource(statementAnnotation.getAnnotation(), parameterTypeClass, languageDriver, method);
             final SqlCommandType sqlCommandType = statementAnnotation.getSqlCommandType();

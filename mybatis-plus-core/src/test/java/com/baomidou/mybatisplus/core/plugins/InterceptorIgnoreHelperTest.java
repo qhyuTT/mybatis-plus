@@ -46,9 +46,9 @@ class InterceptorIgnoreHelperTest {
     }
 
     private void init(Class<?> clazz) {
-        IgnoreStrategy ignoreStrategy = InterceptorIgnoreHelper.initSqlParserInfoCache(clazz);
+        InterceptorIgnoreHelper.InterceptorIgnoreCache cache = InterceptorIgnoreHelper.initSqlParserInfoCache(clazz);
         for (Method method : clazz.getMethods()) {
-            InterceptorIgnoreHelper.initSqlParserInfoCache(ignoreStrategy, clazz.getName(), method);
+            InterceptorIgnoreHelper.initSqlParserInfoCache(cache, clazz.getName(), method);
         }
     }
 

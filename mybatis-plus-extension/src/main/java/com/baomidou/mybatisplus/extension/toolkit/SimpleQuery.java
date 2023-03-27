@@ -15,27 +15,17 @@
  */
 package com.baomidou.mybatisplus.extension.toolkit;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * simple-query 让简单的查询更简单
@@ -65,7 +55,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A> Map<A, E> keyMap(LambdaQueryWrapper<E> wrapper, SFunction<E, A> sFunction, Consumer<E>... peeks) {
-        return list2Map(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, Function.identity(), peeks);
+        return list2Map(selectList(getType(sFunction), wrapper), sFunction, Function.identity(), peeks);
     }
 
     /**
@@ -81,7 +71,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A> Map<A, E> keyMap(LambdaQueryWrapper<E> wrapper, SFunction<E, A> sFunction, boolean isParallel, Consumer<E>... peeks) {
-        return list2Map(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, Function.identity(), isParallel, peeks);
+        return list2Map(selectList(getType(sFunction), wrapper), sFunction, Function.identity(), isParallel, peeks);
     }
 
     /**
@@ -89,7 +79,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A, P> Map<A, P> map(LambdaQueryWrapper<E> wrapper, SFunction<E, A> keyFunc, SFunction<E, P> valueFunc, Consumer<E>... peeks) {
-        return list2Map(Db.list(wrapper.setEntityClass(getType(keyFunc))), keyFunc, valueFunc, peeks);
+        return list2Map(selectList(getType(keyFunc), wrapper), keyFunc, valueFunc, peeks);
     }
 
     /**
@@ -107,7 +97,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A, P> Map<A, P> map(LambdaQueryWrapper<E> wrapper, SFunction<E, A> keyFunc, SFunction<E, P> valueFunc, boolean isParallel, Consumer<E>... peeks) {
-        return list2Map(Db.list(wrapper.setEntityClass(getType(keyFunc))), keyFunc, valueFunc, isParallel, peeks);
+        return list2Map(selectList(getType(keyFunc), wrapper), keyFunc, valueFunc, isParallel, peeks);
     }
 
     /**
@@ -115,7 +105,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A> Map<A, List<E>> group(LambdaQueryWrapper<E> wrapper, SFunction<E, A> sFunction, Consumer<E>... peeks) {
-        return listGroupBy(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, peeks);
+        return listGroupBy(selectList(getType(sFunction), wrapper), sFunction, peeks);
     }
 
     /**
@@ -123,7 +113,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <T, K> Map<K, List<T>> group(LambdaQueryWrapper<T> wrapper, SFunction<T, K> sFunction, boolean isParallel, Consumer<T>... peeks) {
-        return listGroupBy(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, isParallel, peeks);
+        return listGroupBy(selectList(getType(sFunction), wrapper), sFunction, isParallel, peeks);
     }
 
     /**
@@ -131,7 +121,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <T, K, D, A> Map<K, D> group(LambdaQueryWrapper<T> wrapper, SFunction<T, K> sFunction, Collector<T, A, D> downstream, Consumer<T>... peeks) {
-        return listGroupBy(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, downstream, false, peeks);
+        return listGroupBy(selectList(getType(sFunction), wrapper), sFunction, downstream, false, peeks);
     }
 
     /**
@@ -150,7 +140,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <T, K, D, A> Map<K, D> group(LambdaQueryWrapper<T> wrapper, SFunction<T, K> sFunction, Collector<T, A, D> downstream, boolean isParallel, Consumer<T>... peeks) {
-        return listGroupBy(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, downstream, isParallel, peeks);
+        return listGroupBy(selectList(getType(sFunction), wrapper), sFunction, downstream, isParallel, peeks);
     }
 
     /**
@@ -158,7 +148,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A> List<A> list(LambdaQueryWrapper<E> wrapper, SFunction<E, A> sFunction, Consumer<E>... peeks) {
-        return list2List(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, peeks);
+        return list2List(selectList(getType(sFunction), wrapper), sFunction, peeks);
     }
 
     /**
@@ -173,7 +163,7 @@ public class SimpleQuery {
      */
     @SafeVarargs
     public static <E, A> List<A> list(LambdaQueryWrapper<E> wrapper, SFunction<E, A> sFunction, boolean isParallel, Consumer<E>... peeks) {
-        return list2List(Db.list(wrapper.setEntityClass(getType(sFunction))), sFunction, isParallel, peeks);
+        return list2List(selectList(getType(sFunction), wrapper), sFunction, isParallel, peeks);
     }
 
     /**
@@ -325,6 +315,18 @@ public class SimpleQuery {
             return Stream.empty();
         }
         return Stream.of(peeks).reduce(StreamSupport.stream(list.spliterator(), isParallel), Stream::peek, Stream::concat);
+    }
+
+    /**
+     * 通过entityClass查询列表，并关闭sqlSession
+     *
+     * @param entityClass 表对应实体
+     * @param wrapper     条件构造器
+     * @param <E>         实体类型
+     * @return 查询列表结果
+     */
+    public static <E> List<E> selectList(Class<E> entityClass, LambdaQueryWrapper<E> wrapper) {
+        return SqlHelper.execute(entityClass, m -> m.selectList(wrapper));
     }
 
 }

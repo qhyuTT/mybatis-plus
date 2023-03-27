@@ -66,11 +66,7 @@ public class DialectFactory {
                 || dbType == DbType.SAP_HANA
                 || dbType == DbType.IMPALA
                 || dbType == DbType.HIGH_GO
-                || dbType == DbType.VERTICA
-                || dbType == DbType.REDSHIFT
-                || dbType == DbType.OPENGAUSS
-                || dbType == DbType.TDENGINE
-                || dbType == DbType.UXDB) {
+                || dbType == DbType.VERTICA) {
                 dialect = new PostgreDialect();
             }
             // other types
@@ -88,7 +84,7 @@ public class DialectFactory {
                 dialect = new GBasedbtDialect();
             } else if (dbType == DbType.GBASE_INFORMIX) {
                 dialect = new GBaseInfromixDialect();
-            } else if (dbType == DbType.XCloud) {
+            }else if (dbType == DbType.XCloud){
                 dialect = new XCloudDialect();
             } else if (dbType == DbType.FIREBIRD) {
                 dialect = new FirebirdDialect();
@@ -96,8 +92,6 @@ public class DialectFactory {
                 || dbType == DbType.GBASEDBT
                 || dbType == DbType.GBASE_INFORMIX) {
                 dialect = new GBase8sDialect();
-            }else if(dbType==DbType.INFORMIX){
-                dialect = new InformixDialect();
             }
             DIALECT_ENUM_MAP.put(dbType, dialect);
         }

@@ -15,26 +15,10 @@
  */
 package com.baomidou.mybatisplus.core.metadata;
 
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.OrderBy;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
-import com.baomidou.mybatisplus.core.handlers.AnnotationHandler;
-import com.baomidou.mybatisplus.core.handlers.PostInitTableInfoHandler;
 import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
-import com.baomidou.mybatisplus.core.toolkit.ClassUtils;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.baomidou.mybatisplus.core.toolkit.ExceptionUtils;
-import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
-import com.baomidou.mybatisplus.core.toolkit.LambdaUtils;
-import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.*;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
@@ -49,12 +33,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toList;
@@ -68,6 +47,7 @@ import static java.util.stream.Collectors.toList;
  * @since 2016-09-09
  */
 public class TableInfoHelper {
+
     private static final Log logger = LogFactory.getLog(TableInfoHelper.class);
 
     /**
@@ -159,7 +139,7 @@ public class TableInfoHelper {
      * @param clazz 反射实体类
      * @return 数据库表反射信息
      */
-    public static synchronized TableInfo initTableInfo(MapperBuilderAssistant builderAssistant, Class<?> clazz) {
+    public synchronized static TableInfo initTableInfo(MapperBuilderAssistant builderAssistant, Class<?> clazz) {
         TableInfo targetTableInfo = TABLE_INFO_CACHE.get(clazz);
         final Configuration configuration = builderAssistant.getConfiguration();
         if (targetTableInfo != null) {
@@ -181,7 +161,7 @@ public class TableInfoHelper {
      * @param clazz 反射实体类
      * @return 数据库表反射信息
      */
-    private static synchronized TableInfo initTableInfo(Configuration configuration, String currentNamespace, Class<?> clazz) {
+    private synchronized static TableInfo initTableInfo(Configuration configuration, String currentNamespace, Class<?> clazz) {
         /* 没有获取到缓存信息,则初始化 */
         TableInfo tableInfo = new TableInfo(configuration, clazz);
         tableInfo.setCurrentNamespace(currentNamespace);
@@ -193,11 +173,11 @@ public class TableInfoHelper {
         List<String> excludePropertyList = excludeProperty != null && excludeProperty.length > 0 ? Arrays.asList(excludeProperty) : Collections.emptyList();
 
         /* 初始化字段相关 */
-        initTableFields(configuration, clazz, globalConfig, tableInfo, excludePropertyList);
+        initTableFields(clazz, globalConfig, tableInfo, excludePropertyList);
 
         /* 自动构建 resultMap */
         tableInfo.initResultMapIfNeed();
-        globalConfig.getPostInitTableInfoHandler().postTableInfo(tableInfo, configuration);
+
         TABLE_INFO_CACHE.put(clazz, tableInfo);
         TABLE_NAME_INFO_CACHE.put(tableInfo.getTableName(), tableInfo);
 
@@ -219,8 +199,7 @@ public class TableInfoHelper {
     private static String[] initTableName(Class<?> clazz, GlobalConfig globalConfig, TableInfo tableInfo) {
         /* 数据库全局配置 */
         GlobalConfig.DbConfig dbConfig = globalConfig.getDbConfig();
-        AnnotationHandler annotationHandler = globalConfig.getAnnotationHandler();
-        TableName table = annotationHandler.getAnnotation(clazz, TableName.class);
+        TableName table = clazz.getAnnotation(TableName.class);
 
         String tableName = clazz.getSimpleName();
         String tablePrefix = dbConfig.getTablePrefix();
@@ -262,7 +241,7 @@ public class TableInfoHelper {
 
         /* 开启了自定义 KEY 生成器 */
         if (CollectionUtils.isNotEmpty(dbConfig.getKeyGenerators())) {
-            tableInfo.setKeySequence(annotationHandler.getAnnotation(clazz, KeySequence.class));
+            tableInfo.setKeySequence(clazz.getAnnotation(KeySequence.class));
         }
         return excludeProperty;
     }
@@ -299,17 +278,17 @@ public class TableInfoHelper {
      * @param globalConfig 全局配置
      * @param tableInfo    数据库表反射信息
      */
-    private static void initTableFields(Configuration configuration, Class<?> clazz, GlobalConfig globalConfig, TableInfo tableInfo, List<String> excludeProperty) {
-        AnnotationHandler annotationHandler = globalConfig.getAnnotationHandler();
-        PostInitTableInfoHandler postInitTableInfoHandler = globalConfig.getPostInitTableInfoHandler();
+    private static void initTableFields(Class<?> clazz, GlobalConfig globalConfig, TableInfo tableInfo, List<String> excludeProperty) {
+        /* 数据库全局配置 */
+        GlobalConfig.DbConfig dbConfig = globalConfig.getDbConfig();
         Reflector reflector = tableInfo.getReflector();
-        List<Field> list = getAllFields(clazz, annotationHandler);
+        List<Field> list = getAllFields(clazz);
         // 标记是否读取到主键
         boolean isReadPK = false;
         // 是否存在 @TableId 注解
-        boolean existTableId = isExistTableId(list, annotationHandler);
+        boolean existTableId = isExistTableId(list);
         // 是否存在 @TableLogic 注解
-        boolean existTableLogic = isExistTableLogic(list, annotationHandler);
+        boolean existTableLogic = isExistTableLogic(list);
 
         List<TableFieldInfo> fieldList = new ArrayList<>(list.size());
         for (Field field : list) {
@@ -318,44 +297,41 @@ public class TableInfoHelper {
             }
 
             boolean isPK = false;
-            boolean isOrderBy = annotationHandler.getAnnotation(field, OrderBy.class) != null;
+            boolean isOrderBy = field.getAnnotation(OrderBy.class) != null;
 
             /* 主键ID 初始化 */
             if (existTableId) {
-                TableId tableId = annotationHandler.getAnnotation(field, TableId.class);
+                TableId tableId = field.getAnnotation(TableId.class);
                 if (tableId != null) {
                     if (isReadPK) {
                         throw ExceptionUtils.mpe("@TableId can't more than one in Class: \"%s\".", clazz.getName());
                     }
 
-                    initTableIdWithAnnotation(globalConfig, tableInfo, field, tableId);
+                    initTableIdWithAnnotation(dbConfig, tableInfo, field, tableId);
                     isPK = isReadPK = true;
                 }
             } else if (!isReadPK) {
-                isPK = isReadPK = initTableIdWithoutAnnotation(globalConfig, tableInfo, field);
+                isPK = isReadPK = initTableIdWithoutAnnotation(dbConfig, tableInfo, field);
+
             }
 
             if (isPK) {
                 if (isOrderBy) {
-                    tableInfo.getOrderByFields().add(new TableFieldInfo(globalConfig, tableInfo, field, reflector, existTableLogic, true));
+                    tableInfo.getOrderByFields().add(new TableFieldInfo(dbConfig, tableInfo, field, reflector, existTableLogic, true));
                 }
                 continue;
             }
 
-            final TableField tableField = annotationHandler.getAnnotation(field, TableField.class);
+            final TableField tableField = field.getAnnotation(TableField.class);
 
             /* 有 @TableField 注解的字段初始化 */
             if (tableField != null) {
-                TableFieldInfo tableFieldInfo = new TableFieldInfo(globalConfig, tableInfo, field, tableField, reflector, existTableLogic, isOrderBy);
-                fieldList.add(tableFieldInfo);
-                postInitTableInfoHandler.postFieldInfo(tableFieldInfo, configuration);
+                fieldList.add(new TableFieldInfo(dbConfig, tableInfo, field, tableField, reflector, existTableLogic, isOrderBy));
                 continue;
             }
 
             /* 无 @TableField  注解的字段初始化 */
-            TableFieldInfo tableFieldInfo = new TableFieldInfo(globalConfig, tableInfo, field, reflector, existTableLogic, isOrderBy);
-            fieldList.add(tableFieldInfo);
-            postInitTableInfoHandler.postFieldInfo(tableFieldInfo, configuration);
+            fieldList.add(new TableFieldInfo(dbConfig, tableInfo, field, reflector, existTableLogic, isOrderBy));
         }
 
         /* 字段列表 */
@@ -372,41 +348,11 @@ public class TableInfoHelper {
      * 判断主键注解是否存在
      * </p>
      *
-     * @param clazz 实体类
      * @param list 字段列表
      * @return true 为存在 {@link TableId} 注解;
      */
-    public static boolean isExistTableId(Class<?> clazz, List<Field> list) {
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
-        AnnotationHandler annotationHandler = GlobalConfigUtils.getGlobalConfig(tableInfo.getConfiguration()).getAnnotationHandler();
-        return isExistTableId(list, annotationHandler);
-    }
-
-    /**
-     * <p>
-     * 判断主键注解是否存在
-     * </p>
-     *
-     * @param list 字段列表
-     * @return true 为存在 {@link TableId} 注解;
-     */
-    public static boolean isExistTableId(List<Field> list, AnnotationHandler annotationHandler) {
-        return list.stream().anyMatch(field -> annotationHandler.isAnnotationPresent(field, TableId.class));
-    }
-
-    /**
-     * <p>
-     * 判断逻辑删除注解是否存在
-     * </p>
-     *
-     * @param clazz 实体类
-     * @param list 字段列表
-     * @return true 为存在 {@link TableLogic} 注解;
-     */
-    public static boolean isExistTableLogic(Class<?> clazz, List<Field> list) {
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
-        AnnotationHandler annotationHandler = GlobalConfigUtils.getGlobalConfig(tableInfo.getConfiguration()).getAnnotationHandler();
-        return isExistTableLogic(list, annotationHandler);
+    public static boolean isExistTableId(List<Field> list) {
+        return list.stream().anyMatch(field -> field.isAnnotationPresent(TableId.class));
     }
 
     /**
@@ -417,23 +363,8 @@ public class TableInfoHelper {
      * @param list 字段列表
      * @return true 为存在 {@link TableLogic} 注解;
      */
-    public static boolean isExistTableLogic(List<Field> list, AnnotationHandler annotationHandler) {
-        return list.stream().anyMatch(field -> annotationHandler.isAnnotationPresent(field, TableLogic.class));
-    }
-
-    /**
-     * <p>
-     * 判断排序注解是否存在
-     * </p>
-     *
-     * @param clazz 实体类
-     * @param list 字段列表
-     * @return true 为存在 {@link OrderBy} 注解;
-     */
-    public static boolean isExistOrderBy(Class<?> clazz, List<Field> list) {
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
-        AnnotationHandler annotationHandler = GlobalConfigUtils.getGlobalConfig(tableInfo.getConfiguration()).getAnnotationHandler();
-        return isExistOrderBy(list, annotationHandler);
+    public static boolean isExistTableLogic(List<Field> list) {
+        return list.stream().anyMatch(field -> field.isAnnotationPresent(TableLogic.class));
     }
 
     /**
@@ -442,11 +373,10 @@ public class TableInfoHelper {
      * </p>
      *
      * @param list 字段列表
-     * @param annotationHandler 注解处理类
      * @return true 为存在 {@link OrderBy} 注解;
      */
-    public static boolean isExistOrderBy(List<Field> list, AnnotationHandler annotationHandler) {
-        return list.stream().anyMatch(field -> annotationHandler.isAnnotationPresent(field, OrderBy.class));
+    public static boolean isExistOrderBy(List<Field> list) {
+        return list.stream().anyMatch(field -> field.isAnnotationPresent(OrderBy.class));
     }
 
     /**
@@ -454,16 +384,15 @@ public class TableInfoHelper {
      * 主键属性初始化
      * </p>
      *
-     * @param globalConfig  全局配置信息
+     * @param dbConfig  全局配置信息
      * @param tableInfo 表信息
      * @param field     字段
      * @param tableId   注解
      */
-    private static void initTableIdWithAnnotation(GlobalConfig globalConfig, TableInfo tableInfo, Field field, TableId tableId) {
-        GlobalConfig.DbConfig dbConfig = globalConfig.getDbConfig();
+    private static void initTableIdWithAnnotation(GlobalConfig.DbConfig dbConfig, TableInfo tableInfo, Field field, TableId tableId) {
         boolean underCamel = tableInfo.isUnderCamel();
         final String property = field.getName();
-        if (globalConfig.getAnnotationHandler().isAnnotationPresent(field, TableField.class)) {
+        if (field.getAnnotation(TableField.class) != null) {
             logger.warn(String.format("This \"%s\" is the table primary key by @TableId annotation in Class: \"%s\",So @TableField annotation will not work!",
                 property, tableInfo.getEntityType().getName()));
         }
@@ -494,12 +423,6 @@ public class TableInfoHelper {
             logger.warn(String.format("This primary key of \"%s\" is primitive !不建议如此请使用包装类 in Class: \"%s\"",
                 property, tableInfo.getEntityType().getName()));
         }
-        if (StringUtils.isEmpty(tableId.value())) {
-            String columnFormat = dbConfig.getColumnFormat();
-            if (StringUtils.isNotBlank(columnFormat)) {
-                column = String.format(columnFormat, column);
-            }
-        }
         tableInfo.setKeyRelated(checkRelated(underCamel, property, column))
             .setKeyColumn(column)
             .setKeyProperty(property)
@@ -511,16 +434,14 @@ public class TableInfoHelper {
      * 主键属性初始化
      * </p>
      *
-     * @param globalConfig 全局配置
      * @param tableInfo 表信息
      * @param field     字段
      * @return true 继续下一个属性判断，返回 continue;
      */
-    private static boolean initTableIdWithoutAnnotation(GlobalConfig globalConfig, TableInfo tableInfo, Field field) {
-        GlobalConfig.DbConfig dbConfig = globalConfig.getDbConfig();
+    private static boolean initTableIdWithoutAnnotation(GlobalConfig.DbConfig dbConfig, TableInfo tableInfo, Field field) {
         final String property = field.getName();
         if (DEFAULT_ID_NAME.equalsIgnoreCase(property)) {
-            if (globalConfig.getAnnotationHandler().isAnnotationPresent(field, TableField.class)) {
+            if (field.getAnnotation(TableField.class) != null) {
                 logger.warn(String.format("This \"%s\" is the table primary key by default name for `id` in Class: \"%s\",So @TableField will not work!",
                     property, tableInfo.getEntityType().getName()));
             }
@@ -532,10 +453,6 @@ public class TableInfoHelper {
             if (keyType.isPrimitive()) {
                 logger.warn(String.format("This primary key of \"%s\" is primitive !不建议如此请使用包装类 in Class: \"%s\"",
                     property, tableInfo.getEntityType().getName()));
-            }
-            String columnFormat = dbConfig.getColumnFormat();
-            if (StringUtils.isNotBlank(columnFormat)) {
-                column = String.format(columnFormat, column);
             }
             tableInfo.setKeyRelated(checkRelated(tableInfo.isUnderCamel(), property, column))
                 .setIdType(dbConfig.getIdType())
@@ -580,26 +497,11 @@ public class TableInfoHelper {
      * @return 属性集合
      */
     public static List<Field> getAllFields(Class<?> clazz) {
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
-        AnnotationHandler annotationHandler = GlobalConfigUtils.getGlobalConfig(tableInfo.getConfiguration()).getAnnotationHandler();
-        return getAllFields(clazz, annotationHandler);
-    }
-
-    /**
-     * <p>
-     * 获取该类的所有属性列表
-     * </p>
-     *
-     * @param clazz             反射类
-     * @param annotationHandler 注解处理类
-     * @return 属性集合
-     */
-    public static List<Field> getAllFields(Class<?> clazz, AnnotationHandler annotationHandler) {
         List<Field> fieldList = ReflectionKit.getFieldList(ClassUtils.getUserClass(clazz));
         return fieldList.stream()
             .filter(field -> {
                 /* 过滤注解非表字段属性 */
-                TableField tableField = annotationHandler.getAnnotation(field, TableField.class);
+                TableField tableField = field.getAnnotation(TableField.class);
                 return (tableField == null || tableField.exist());
             }).collect(toList());
     }

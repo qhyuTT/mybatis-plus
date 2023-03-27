@@ -53,8 +53,4 @@ open class KtUpdateChainWrapper<T : Any>(
         return baseMapper
     }
 
-    override fun getEntityClass(): Class<T> {
-        return super.wrapperChildren.entityClass
-    }
-
 }

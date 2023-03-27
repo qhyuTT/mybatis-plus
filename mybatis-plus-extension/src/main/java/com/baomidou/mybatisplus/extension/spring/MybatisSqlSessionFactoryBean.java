@@ -49,6 +49,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -441,6 +442,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
             "Property 'configuration' and 'configLocation' can not specified with together");
         //TODO 清理掉资源  建议不要保留这个玩意了
         SqlRunner.DEFAULT.close();
+        // 创建sql会话工厂的过程就伴随着配置的解析，也会解析XML文件和Mapper的类
         this.sqlSessionFactory = buildSqlSessionFactory();
     }
 
@@ -538,7 +540,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
             try {
                 targetConfiguration.setDatabaseId(this.databaseIdProvider.getDatabaseId(this.dataSource));
             } catch (SQLException e) {
-                throw new IOException("Failed getting a databaseId", e);
+                throw new NestedIOException("Failed getting a databaseId", e);
             }
         }
 
@@ -546,10 +548,11 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
 
         if (xmlConfigBuilder != null) {
             try {
+                // 猜测这里就是xml钟sql的解析,其实不是
                 xmlConfigBuilder.parse();
                 LOGGER.debug(() -> "Parsed configuration file: '" + this.configLocation + "'");
             } catch (Exception ex) {
-                throw new IOException("Failed to parse config resource: " + this.configLocation, ex);
+                throw new NestedIOException("Failed to parse config resource: " + this.configLocation, ex);
             } finally {
                 ErrorContext.instance().reset();
             }
@@ -570,9 +573,10 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
                     try {
                         XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(),
                             targetConfiguration, mapperLocation.toString(), targetConfiguration.getSqlFragments());
+                        // 真正的解析在这里，mapperxml文件
                         xmlMapperBuilder.parse();
                     } catch (Exception e) {
-                        throw new IOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
+                        throw new NestedIOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
                     } finally {
                         ErrorContext.instance().reset();
                     }

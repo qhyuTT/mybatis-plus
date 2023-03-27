@@ -15,12 +15,12 @@
  */
 package com.baomidou.mybatisplus.extension.conditions.query;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.ChainWrapper;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 具有查询方法的定义
@@ -36,7 +36,7 @@ public interface ChainQuery<T> extends ChainWrapper<T> {
      * @return 集合
      */
     default List<T> list() {
-        return execute(mapper -> mapper.selectList(getWrapper()));
+        return getBaseMapper().selectList(getWrapper());
     }
 
     /**
@@ -45,7 +45,7 @@ public interface ChainQuery<T> extends ChainWrapper<T> {
      * @return 单个
      */
     default T one() {
-        return execute(mapper -> mapper.selectOne(getWrapper()));
+        return getBaseMapper().selectOne(getWrapper());
     }
 
     /**
@@ -64,7 +64,7 @@ public interface ChainQuery<T> extends ChainWrapper<T> {
      * @return count
      */
     default Long count() {
-        return execute(mapper -> SqlHelper.retCount(mapper.selectCount(getWrapper())));
+        return SqlHelper.retCount(getBaseMapper().selectCount(getWrapper()));
     }
 
     /**
@@ -83,6 +83,6 @@ public interface ChainQuery<T> extends ChainWrapper<T> {
      * @return 分页数据
      */
     default <E extends IPage<T>> E page(E page) {
-        return execute(mapper -> mapper.selectPage(page, getWrapper()));
+        return getBaseMapper().selectPage(page, getWrapper());
     }
 }

@@ -45,10 +45,6 @@ public final class ChainWrappers {
         return new QueryChainWrapper<>(mapper);
     }
 
-    public static <T> QueryChainWrapper<T> queryChain(Class<T> entityClass) {
-        return new QueryChainWrapper<>(entityClass);
-    }
-
     /**
      * 链式查询 lambda 式
      * <p>注意：不支持 Kotlin </p>
@@ -57,30 +53,6 @@ public final class ChainWrappers {
      */
     public static <T> LambdaQueryChainWrapper<T> lambdaQueryChain(BaseMapper<T> mapper) {
         return new LambdaQueryChainWrapper<>(mapper);
-    }
-
-    public static <T> LambdaQueryChainWrapper<T> lambdaQueryChain(Class<T> entityClass) {
-        return new LambdaQueryChainWrapper<>(entityClass);
-    }
-
-    /**
-     * 链式查询 lambda 式
-     * <p>注意：不支持 Kotlin </p>
-     *
-     * @return LambdaQueryWrapper 的包装类
-     */
-    public static <T> LambdaQueryChainWrapper<T> lambdaQueryChain(BaseMapper<T> mapper, T entity) {
-        return new LambdaQueryChainWrapper<>(mapper, entity);
-    }
-
-    /**
-     * 链式查询 lambda 式
-     * <p>注意：不支持 Kotlin </p>
-     *
-     * @return LambdaQueryWrapper 的包装类
-     */
-    public static <T> LambdaQueryChainWrapper<T> lambdaQueryChain(BaseMapper<T> mapper, Class<T> entityClass) {
-        return new LambdaQueryChainWrapper<>(mapper, entityClass);
     }
 
     /**
@@ -112,10 +84,6 @@ public final class ChainWrappers {
         return new UpdateChainWrapper<>(mapper);
     }
 
-    public static <T> UpdateChainWrapper<T> updateChain(Class<T> entityClass) {
-        return new UpdateChainWrapper<>(entityClass);
-    }
-
     /**
      * 链式更改 lambda 式
      * <p>注意：不支持 Kotlin </p>
@@ -124,10 +92,6 @@ public final class ChainWrappers {
      */
     public static <T> LambdaUpdateChainWrapper<T> lambdaUpdateChain(BaseMapper<T> mapper) {
         return new LambdaUpdateChainWrapper<>(mapper);
-    }
-
-    public static <T> LambdaUpdateChainWrapper<T> lambdaUpdateChain(Class<T> entityClass) {
-        return new LambdaUpdateChainWrapper<>(entityClass);
     }
 
     /**
