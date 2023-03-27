@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group 'com.baomidou'
+version '3.5.2.2-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api(project(":mybatis-plus-boot-starter"))
+    api "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
+    api "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation "${lib.'spring-web'}"
+    implementation "${lib.'spring-context-support'}"
+    implementation "${lib.'spring-jdbc'}"
+    implementation "${lib.'spring-aop'}"
+    implementation "${lib.'mysql'}"
+    implementation('com.alibaba:druid:1.2.16')
+}
+
+test {
+    useJUnitPlatform()
+}
