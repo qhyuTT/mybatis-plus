@@ -20,4 +20,8 @@ import org.springframework.context.annotation.Import;
 // spring会把META-INFO中的东西扫起来，注入到容器，我们用的spring，所以手动import进来
 @Import(MybatisPlusAutoConfiguration.class)
 public class StartConfig {
+    /**
+     * 在MapperScan里面没有找到xml的解析逻辑呢，好像是扫描路径把mapper接口让spring registry管理
+     *
+     */
 }

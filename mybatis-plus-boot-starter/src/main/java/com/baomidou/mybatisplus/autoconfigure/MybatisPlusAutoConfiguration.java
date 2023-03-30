@@ -189,6 +189,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
         if (!ObjectUtils.isEmpty(this.typeHandlers)) {
             factory.setTypeHandlers(this.typeHandlers);
         }
+        // 这个地方会将xml查询出来，放入到MapperLocations里面，后续循环进行解析
         if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) {
             factory.setMapperLocations(this.properties.resolveMapperLocations());
         }

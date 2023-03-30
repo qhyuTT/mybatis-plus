@@ -20,6 +20,7 @@ public class MybatisQhyuApplication {
             new AnnotationConfigApplicationContext(StartConfig.class);
         UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
         SkyworthUser userInfoById = bean.getUserInfoById("0381321c-089b-43ef-b5d5-e4556c5670e9");
+        //bean.updateId("0381321c-089b-43ef-b5d5-e4556c5670e9");
         System.out.println(userInfoById.toString());
     }
 }

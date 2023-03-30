@@ -7,4 +7,8 @@
         Select * from skyworth_user limit limit 0,1
     </select>
 
+    <update id="updateId">
+        update skyworth_user SET is_first_login = 0 WHERE id = #{id}
+    </update>
+
 </mapper>

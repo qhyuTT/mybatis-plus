@@ -86,6 +86,7 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);
             } else {
+                // cachedInvoker会组装PlainMethodInvoker或者DefaultMethodInvoker
                 return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
             }
         } catch (Throwable t) {

@@ -5,6 +5,7 @@ import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * All rights Reserved, Designed By http://xnky.travelsky.net/ <br>
@@ -21,8 +22,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserInfoMapper userInfoMapper;
 
+    //@Transactional
     public SkyworthUser getUserInfoById(String id){
+        userInfoMapper.selectById(id);
         return userInfoMapper.selectById(id);
+    }
+
+    @Override
+    public void updateId(String id) {
+        userInfoMapper.updateId(id);
     }
 
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qhyu.cloud.model.SkyworthUser;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ import java.util.List;
 public interface UserInfoMapper extends BaseMapper<SkyworthUser> {
 
     List<SkyworthUser> getAll();
+
+    void updateId(@Param("id") String id);
 }

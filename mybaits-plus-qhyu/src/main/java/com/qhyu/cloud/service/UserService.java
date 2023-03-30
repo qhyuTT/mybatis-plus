@@ -15,4 +15,6 @@ import com.qhyu.cloud.model.SkyworthUser;
 public interface UserService {
 
     SkyworthUser getUserInfoById(String id);
+
+    void updateId(String id);
 }

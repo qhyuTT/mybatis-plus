@@ -92,7 +92,7 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
         String resource = type.toString();
         // 避免重复加载
         if (!configuration.isResourceLoaded(resource)) {
-            // 加载对应的xml文件，根据class文件对应的xml文件利用XMLMapperBuilder解析
+            // 如果没有加载过xml文件，就重新加载
             loadXmlResource();
             // 避免重复加载
             configuration.addLoadedResource(resource);
