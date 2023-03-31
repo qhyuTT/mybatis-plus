@@ -443,6 +443,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
         //TODO 清理掉资源  建议不要保留这个玩意了
         SqlRunner.DEFAULT.close();
         // 创建sql会话工厂的过程就伴随着配置的解析，也会解析XML文件和Mapper的类
+        // 简单的说就是这里创建了sqlSessionfactory实例
         this.sqlSessionFactory = buildSqlSessionFactory();
     }
 

@@ -1,5 +1,6 @@
 package com.qhyu.cloud.service.impl;
 
+import com.qhyu.cloud.controller.Test;
 import com.qhyu.cloud.mapper.UserInfoMapper;
 import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
