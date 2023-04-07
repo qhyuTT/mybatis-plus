@@ -1,8 +1,6 @@
 package com.qhyu.cloud.config;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -22,12 +20,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestDefinitionPostProcess implements BeanDefinitionRegistryPostProcessor {
 
-
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         GenericBeanDefinition test = (GenericBeanDefinition) registry.getBeanDefinition("test");
+        // 这样的话注入方式发生改变，使用的是type
         test.setAutowireMode(2);
-
     }
 
     @Override

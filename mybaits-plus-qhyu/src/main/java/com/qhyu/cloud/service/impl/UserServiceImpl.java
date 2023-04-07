@@ -1,5 +1,7 @@
 package com.qhyu.cloud.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.qhyu.cloud.controller.Test;
 import com.qhyu.cloud.mapper.UserInfoMapper;
 import com.qhyu.cloud.model.SkyworthUser;
@@ -25,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     //@Transactional
     public SkyworthUser getUserInfoById(String id){
-        userInfoMapper.selectById(id);
+        //userInfoMapper.selectById(id);
         return userInfoMapper.selectById(id);
     }
 

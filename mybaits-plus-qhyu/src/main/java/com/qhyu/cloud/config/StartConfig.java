@@ -1,8 +1,15 @@
 package com.qhyu.cloud.config;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.annotation.MapperScans;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -24,4 +31,15 @@ public class StartConfig {
      * 在MapperScan里面没有找到xml的解析逻辑呢，好像是扫描路径把mapper接口让spring registry管理
      *
      */
+    @Bean
+    public LogQueryAndUpdateSqlHandler1 getLogSqlHandler1() {
+        return new LogQueryAndUpdateSqlHandler1(true);
+    }
+    @Bean
+    public LogQueryAndUpdateSqlHandler getLogSqlHandler() {
+        return new LogQueryAndUpdateSqlHandler(true);
+    }
+
+
+
 }
