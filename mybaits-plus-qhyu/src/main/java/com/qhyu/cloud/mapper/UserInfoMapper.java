@@ -19,7 +19,6 @@ import java.util.List;
  * @version v1.0 <br>
  */
 // 按照我的理解这个@Mapper可以不写，到时候再看看
-@Mapper
 @CacheNamespace
 public interface UserInfoMapper extends BaseMapper<SkyworthUser> {
 

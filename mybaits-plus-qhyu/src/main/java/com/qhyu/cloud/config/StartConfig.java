@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Import;
  * @version v1.0 <br>
  */
 @ComponentScan("com.qhyu.cloud")
-@MapperScan("com.qhyu.cloud.mapper")
+@MapperScan("com.qhyu.cloud.mapper.**")
 // spring会把META-INFO中的东西扫起来，注入到容器，我们用的spring，所以手动import进来
 @Import(MybatisPlusAutoConfiguration.class)
 public class StartConfig {

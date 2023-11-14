@@ -556,7 +556,7 @@ public class TableInfo implements Constants {
      * @return 初始化实例
      * @since 3.5.0
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"deprecation","unchecked"})
     public <T> T newInstance() {
         Constructor<?> defaultConstructor = reflector.getDefaultConstructor();
         if (!defaultConstructor.isAccessible()) {

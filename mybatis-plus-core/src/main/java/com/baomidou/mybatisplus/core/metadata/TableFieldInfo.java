@@ -368,6 +368,7 @@ public class TableFieldInfo implements Constants {
      *
      * @param field 字段
      */
+    @SuppressWarnings({"deprecation"})
     private void initOrderBy(Field field) {
         OrderBy orderBy = field.getAnnotation(OrderBy.class);
         if (null != orderBy) {

@@ -14,6 +14,5 @@ import org.apache.ibatis.annotations.Mapper;
  * date 2023年 03月31日 15:52 <br>
  * @version v1.0 <br>
  */
-@Mapper
 public interface AirBaseMapper extends BaseMapper<AirBase> {
 }
