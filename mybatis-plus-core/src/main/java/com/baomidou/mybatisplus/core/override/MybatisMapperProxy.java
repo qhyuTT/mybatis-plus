@@ -44,7 +44,7 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
         | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
     private static final Constructor<MethodHandles.Lookup> lookupConstructor;
     private static final Method privateLookupInMethod;
-    private final SqlSession sqlSession;
+    private final SqlSession sqlSession;//这玩意是sqlSessionTemplate
     private final Class<T> mapperInterface;
     private final Map<Method, MapperMethodInvoker> methodCache;
 
