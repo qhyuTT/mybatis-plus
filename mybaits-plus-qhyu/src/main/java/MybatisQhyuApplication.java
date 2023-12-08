@@ -1,4 +1,7 @@
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.qhyu.cloud.config.StartConfig;
+import com.qhyu.cloud.mapper.AirBaseMapper;
+import com.qhyu.cloud.model.AirBase;
 import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -18,9 +21,21 @@ public class MybatisQhyuApplication {
         // 初始化容器用的
         AnnotationConfigApplicationContext annotationConfigApplicationContext =
             new AnnotationConfigApplicationContext(StartConfig.class);
+        transactionManager(annotationConfigApplicationContext);
+    }
+
+    private static void transactionManager(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
         UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
+        AirBaseMapper airBaseMapper = annotationConfigApplicationContext.getBean(AirBaseMapper.class);
+        LambdaQueryChainWrapper<AirBase> airBaseLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(airBaseMapper);
+        Long one = airBaseLambdaQueryChainWrapper.count();
         SkyworthUser userInfoById = bean.getUserInfoById("0381321c-089b-43ef-b5d5-e4556c5670e9");
-        //bean.updateId("0381321c-089b-43ef-b5d5-e4556c5670e9");
+        if (userInfoById.getIsFirstLogin() == 0){
+            bean.updateId("0381321c-089b-43ef-b5d5-e4556c5670e9",1);
+        }else{
+            bean.updateId("0381321c-089b-43ef-b5d5-e4556c5670e9",0);
+        }
+
         System.out.println(userInfoById.toString());
     }
 }

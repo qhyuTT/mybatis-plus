@@ -1,15 +1,9 @@
 package com.qhyu.cloud.config;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
-import org.mybatis.spring.annotation.MapperScans;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -23,7 +17,7 @@ import org.springframework.context.annotation.Import;
  * @version v1.0 <br>
  */
 @ComponentScan("com.qhyu.cloud")
-@MapperScan("com.qhyu.cloud.mapper.**")
+@MapperScan(value = "com.qhyu.cloud.mapper.**")
 // spring会把META-INFO中的东西扫起来，注入到容器，我们用的spring，所以手动import进来
 @Import(MybatisPlusAutoConfiguration.class)
 public class StartConfig {
@@ -39,7 +33,6 @@ public class StartConfig {
     public LogQueryAndUpdateSqlHandler getLogSqlHandler() {
         return new LogQueryAndUpdateSqlHandler(true);
     }
-
 
 
 }

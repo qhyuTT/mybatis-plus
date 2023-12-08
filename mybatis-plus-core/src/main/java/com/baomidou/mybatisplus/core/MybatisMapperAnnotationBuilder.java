@@ -87,6 +87,7 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
         this.type = type;
     }
 
+    // 我就说，也就是说MybatisMapperAnnotationBuilder这个类来解析baseMapper的东西
     @Override
     public void parse() {
         String resource = type.toString();

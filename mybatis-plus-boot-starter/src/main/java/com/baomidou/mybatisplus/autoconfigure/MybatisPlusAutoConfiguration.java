@@ -98,6 +98,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(MybatisPlusAutoConfiguration.class);
 
+    // mybatis-plus的properties
     private final MybatisPlusProperties properties;
 
     private final Interceptor[] interceptors;
@@ -167,6 +168,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
         if (StringUtils.hasText(this.properties.getConfigLocation())) {
             factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
         }
+        // 这里设置了configuration
         applyConfiguration(factory);
         if (this.properties.getConfigurationProperties() != null) {
             factory.setConfigurationProperties(this.properties.getConfigurationProperties());

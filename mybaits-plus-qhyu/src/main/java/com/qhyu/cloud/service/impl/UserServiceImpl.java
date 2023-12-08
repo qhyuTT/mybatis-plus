@@ -1,14 +1,10 @@
 package com.qhyu.cloud.service.impl;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.qhyu.cloud.controller.Test;
 import com.qhyu.cloud.mapper.UserInfoMapper;
 import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * All rights Reserved, Designed By http://xnky.travelsky.net/ <br>
@@ -32,8 +28,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateId(String id) {
-        userInfoMapper.updateId(id);
+    public void updateId(String id,int flag) {
+        // 这个玩意就是一个代理对象，然后调用的时候会使用代理对象
+        userInfoMapper.updateId(id,flag);
     }
 
 }

@@ -8,7 +8,7 @@
     </select>
 
     <update id="updateId">
-        update skyworth_user SET is_first_login = 0 WHERE id = #{id}
+        update skyworth_user SET is_first_login = #{flag} WHERE id = #{id}
     </update>
 
 </mapper>

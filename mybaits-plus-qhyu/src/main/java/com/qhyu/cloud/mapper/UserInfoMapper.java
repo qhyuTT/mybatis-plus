@@ -2,8 +2,6 @@ package com.qhyu.cloud.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qhyu.cloud.model.SkyworthUser;
-import org.apache.ibatis.annotations.CacheNamespace;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,10 +17,10 @@ import java.util.List;
  * @version v1.0 <br>
  */
 // 按照我的理解这个@Mapper可以不写，到时候再看看
-@CacheNamespace
+//@CacheNamespace
 public interface UserInfoMapper extends BaseMapper<SkyworthUser> {
 
     List<SkyworthUser> getAll();
 
-    void updateId(@Param("id") String id);
+    void updateId(@Param("id") String id,@Param("flag") int flag);
 }

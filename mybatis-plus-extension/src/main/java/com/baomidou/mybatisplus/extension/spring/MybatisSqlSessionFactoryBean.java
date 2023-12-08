@@ -563,6 +563,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
             this.transactionFactory == null ? new SpringManagedTransactionFactory() : this.transactionFactory,
             this.dataSource));
 
+        // 从Resouces数据中获取数据，然后解析。
         if (this.mapperLocations != null) {
             if (this.mapperLocations.length == 0) {
                 LOGGER.warn(() -> "Property 'mapperLocations' was specified but matching resources are not found.");
@@ -574,8 +575,23 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
                     try {
                         XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(),
                             targetConfiguration, mapperLocation.toString(), targetConfiguration.getSqlFragments());
-                        // 真正的解析在这里，mapperxml文件
+                        // 真正的解析在这里，mapperxml文件，我没有理解这里为什么使用的是mybatis的xmlMapperBuilder然后baseMapper都是包蜜豆的
                         xmlMapperBuilder.parse();
+                        /**
+                         * public void parse() {
+                         *     if (!configuration.isResourceLoaded(resource)) {
+                         *       // mapperxml中的sql都会被写到configuration中
+                         *       configurationElement(parser.evalNode("/mapper"));
+                         *       configuration.addLoadedResource(resource);
+                         *       // 会把绑定的mapper interface中的baseMapper都给解析了
+                         *       bindMapperForNamespace();
+                         *     }
+                         *
+                         *     parsePendingResultMaps();
+                         *     parsePendingCacheRefs();
+                         *     parsePendingStatements();
+                         *   }
+                         * */
                     } catch (Exception e) {
                         throw new NestedIOException("Failed to parse mapping resource: '" + mapperLocation + "'", e);
                     } finally {
