@@ -44,7 +44,7 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
         | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
     private static final Constructor<MethodHandles.Lookup> lookupConstructor;
     private static final Method privateLookupInMethod;
-    private final SqlSession sqlSession;//这玩意是sqlSessionTemplate
+    private final SqlSession sqlSession;//这玩意是sqlSessionTemplate,每个Mapper接口都会创建一个SqlSessionTemplate的代理对象，也就是真正执行的时候会调用invoke方法
     private final Class<T> mapperInterface;
     private final Map<Method, MapperMethodInvoker> methodCache;
 
@@ -84,6 +84,9 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
             if (Object.class.equals(method.getDeclaringClass())) {
+                // getDeclaringClass 方法是用于获取定义某个方法的类的 Class 对象。
+                // 如果方法是在当前类中定义的，则返回当前类的 Class 对象；如果方法是在父类或接口中定义的，则返回相应的父类或接口的 Class 对象。
+                // 巧妙🤏
                 return method.invoke(this, args);
             } else {
                 // cachedInvoker会组装PlainMethodInvoker或者DefaultMethodInvoker

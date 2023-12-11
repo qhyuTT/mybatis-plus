@@ -1,5 +1,6 @@
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.qhyu.cloud.config.StartConfig;
+import com.qhyu.cloud.dynamic.DynamicInterface;
 import com.qhyu.cloud.mapper.AirBaseMapper;
 import com.qhyu.cloud.model.AirBase;
 import com.qhyu.cloud.model.SkyworthUser;
@@ -22,6 +23,12 @@ public class MybatisQhyuApplication {
         AnnotationConfigApplicationContext annotationConfigApplicationContext =
             new AnnotationConfigApplicationContext(StartConfig.class);
         transactionManager(annotationConfigApplicationContext);
+        //dynamicTest(annotationConfigApplicationContext);
+    }
+
+    private static void dynamicTest(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
+        DynamicInterface bean = annotationConfigApplicationContext.getBean(DynamicInterface.class);
+        bean.test();
     }
 
     private static void transactionManager(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
