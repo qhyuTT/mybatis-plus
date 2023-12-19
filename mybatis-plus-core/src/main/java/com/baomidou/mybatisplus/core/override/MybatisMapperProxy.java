@@ -55,7 +55,9 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
     }
 
     static {
+        // 定义了一个私有的查找对象，是一个Method。
         Method privateLookupIn;
+        // 尝试获取MethodHandles中的privateLookupIn方法，并将其赋值给privateLookupIn变量
         try {
             privateLookupIn = MethodHandles.class.getMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
         } catch (NoSuchMethodException e) {
@@ -100,6 +102,8 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
     private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
         try {
             return CollectionUtils.computeIfAbsent(methodCache, method, m -> {
+                // 这个是因为接口可以有默认方法，所以做特殊处理。
+                // 所以正常的mapper接口都是会走PlainMethodInvoker。
                 if (m.isDefault()) {
                     try {
                         if (privateLookupInMethod == null) {

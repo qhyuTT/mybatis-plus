@@ -15,6 +15,7 @@ dependencies {
     api "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation "com.github.pagehelper:pagehelper:5.3.1"
     implementation "${lib.'spring-web'}"
     implementation "${lib.'spring-context-support'}"
     implementation "${lib.'spring-jdbc'}"

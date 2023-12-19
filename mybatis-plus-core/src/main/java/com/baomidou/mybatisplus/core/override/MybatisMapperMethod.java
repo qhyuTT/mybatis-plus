@@ -107,6 +107,7 @@ public class MybatisMapperMethod {
         return result;
     }
 
+
     @SuppressWarnings("all")
     private <E> Object executeForIPage(SqlSession sqlSession, Object[] args) {
         IPage<E> result = null;

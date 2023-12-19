@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * Package：com.qhyu.cloud.controller <br>
  * Copyright © 2023 xnky.travelsky.net Inc. All rights reserved. <br>
  * Company：Aviation Cares Of Southwest Chen Du LTD  <br>
+ *
  * @author 于琦海 <br>
  * date 2023年 03月31日 15:22 <br>
  * @version v1.0 <br>
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Test {
 
-    public void setUserServiceImpl (UserServiceImpl userServiceImpl){
+    public void setUserServiceImpl(UserServiceImpl userServiceImpl) {
 
     }
 

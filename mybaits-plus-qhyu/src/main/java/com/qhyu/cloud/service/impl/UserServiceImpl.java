@@ -1,5 +1,7 @@
 package com.qhyu.cloud.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qhyu.cloud.mapper.UserInfoMapper;
 import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
@@ -31,6 +33,15 @@ public class UserServiceImpl implements UserService {
     public void updateId(String id,int flag) {
         // 这个玩意就是一个代理对象，然后调用的时候会使用代理对象
         userInfoMapper.updateId(id,flag);
+    }
+
+    public void getAll(){
+        // 为什么我的分页实效了？
+        // 然后我观察我的sql都是select * from ，而且sql没有加条数限制。我初步怀疑是生成语句的时候没给我生成？
+        // 但是我觉得可能是执行分页的时候才加
+        Page<SkyworthUser> objects =Page.of(1,10);
+        IPage<SkyworthUser> all = userInfoMapper.getAll(objects);
+        System.out.println(all.getRecords().size());
     }
 
 }

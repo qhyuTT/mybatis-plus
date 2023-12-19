@@ -17,4 +17,5 @@ public interface UserService {
     SkyworthUser getUserInfoById(String id);
 
     void updateId(String id,int flag);
+    void getAll();
 }

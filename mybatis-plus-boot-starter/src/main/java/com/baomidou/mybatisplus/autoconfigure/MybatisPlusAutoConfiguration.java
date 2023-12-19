@@ -130,6 +130,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
                                         ObjectProvider<List<MybatisPlusPropertiesCustomizer>> mybatisPlusPropertiesCustomizerProvider,
                                         ApplicationContext applicationContext) {
         this.properties = properties;
+        // interceptors的获取
         this.interceptors = interceptorsProvider.getIfAvailable();
         this.typeHandlers = typeHandlersProvider.getIfAvailable();
         this.languageDrivers = languageDriversProvider.getIfAvailable();
@@ -203,6 +204,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
         if (!ObjectUtils.isEmpty(this.languageDrivers)) {
             factory.setScriptingLanguageDrivers(this.languageDrivers);
         }
+        // 如果defaultLanguageDriver不为空就设置到setDefaultScriptingLanguageDriver属性中。
         Optional.ofNullable(defaultLanguageDriver).ifPresent(factory::setDefaultScriptingLanguageDriver);
 
         applySqlSessionFactoryBeanCustomizers(factory);
@@ -316,8 +318,10 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
             builder.addPropertyValue("annotationClass", Mapper.class);
             builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(packages));
             BeanWrapper beanWrapper = new BeanWrapperImpl(MapperScannerConfigurer.class);
+            // 流处理，感觉mybatis-plus到处都是新特性，可以用他来学习下新特性。
             Set<String> propertyNames = Stream.of(beanWrapper.getPropertyDescriptors()).map(PropertyDescriptor::getName)
                 .collect(Collectors.toSet());
+
             if (propertyNames.contains("lazyInitialization")) {
                 // Need to mybatis-spring 2.0.2+
                 // TODO 兼容了mybatis.lazy-initialization配置

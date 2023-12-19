@@ -18,12 +18,19 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @version v1.0 <br>
  */
 public class MybatisQhyuApplication {
+
     public static void main(String[] args) {
         // 初始化容器用的
         AnnotationConfigApplicationContext annotationConfigApplicationContext =
             new AnnotationConfigApplicationContext(StartConfig.class);
-        transactionManager(annotationConfigApplicationContext);
+        //transactionManager(annotationConfigApplicationContext);
         //dynamicTest(annotationConfigApplicationContext);
+        pageTest(annotationConfigApplicationContext);
+    }
+
+    private static void pageTest(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
+        UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
+        bean.getAll();
     }
 
     private static void dynamicTest(AnnotationConfigApplicationContext annotationConfigApplicationContext) {

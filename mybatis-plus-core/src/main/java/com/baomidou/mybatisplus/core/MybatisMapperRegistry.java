@@ -48,6 +48,8 @@ public class MybatisMapperRegistry extends MapperRegistry {
         // TODO 这里换成 MybatisMapperProxyFactory 而不是 MapperProxyFactory
         // fix https://github.com/baomidou/mybatis-plus/issues/4247
         MybatisMapperProxyFactory<T> mapperProxyFactory = (MybatisMapperProxyFactory<T>) knownMappers.get(type);
+        // 分析一下这个lambda
+        // predicate满足的拿出来。如果为空就抛出异常，这种写法学习一下。
         if (mapperProxyFactory == null) {
             mapperProxyFactory = (MybatisMapperProxyFactory<T>) knownMappers.entrySet().stream()
                 .filter(t -> t.getKey().getName().equals(type.getName())).findFirst().map(Map.Entry::getValue)

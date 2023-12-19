@@ -4,7 +4,7 @@
 
 
     <select id="getAll" resultType="com.qhyu.cloud.model.SkyworthUser">
-        Select * from skyworth_user limit limit 0,1
+        Select * from skyworth_user
     </select>
 
     <update id="updateId">

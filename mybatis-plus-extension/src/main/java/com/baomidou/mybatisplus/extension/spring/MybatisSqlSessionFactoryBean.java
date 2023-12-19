@@ -498,6 +498,8 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
                 .filter(clazz -> !clazz.isAnonymousClass()).filter(clazz -> !clazz.isInterface())
                 .filter(clazz -> !clazz.isMemberClass()).forEach(targetConfiguration.getTypeAliasRegistry()::registerAlias);
         }
+        // 我写的还牛逼些
+        // Optional.ofNullable(this.typeAliases).ifPresent((a)-> Stream.of(a).forEach(targetConfiguration.getTypeAliasRegistry()::registerAlias));
 
         if (!isEmpty(this.typeAliases)) {
             Stream.of(this.typeAliases).forEach(typeAlias -> {
@@ -520,10 +522,15 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
         }
 
         if (!isEmpty(this.typeHandlers)) {
-            Stream.of(this.typeHandlers).forEach(typeHandler -> {
+            // 把数组变成流 |  Supplier<ArrayList<String>> x = ArrayList::new; 引用
+            Stream.of(this.typeHandlers).forEach(
+                //targetConfiguration.getTypeHandlerRegistry()::register
+                // 上面是我改了一下的这个方法，源码单纯就是为了LOGGER debug作者才写成这样吧
+                typeHandler -> {
                 targetConfiguration.getTypeHandlerRegistry().register(typeHandler);
                 LOGGER.debug(() -> "Registered type handler: '" + typeHandler + "'");
-            });
+                }
+            );
         }
 
         targetConfiguration.setDefaultEnumTypeHandler(defaultEnumTypeHandler);
@@ -534,6 +541,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
                 LOGGER.debug(() -> "Registered scripting language driver: '" + languageDriver + "'");
             });
         }
+        // 感觉这个在如果有的话设置值很有用
         Optional.ofNullable(this.defaultScriptingLanguageDriver)
             .ifPresent(targetConfiguration::setDefaultScriptingLanguage);
 

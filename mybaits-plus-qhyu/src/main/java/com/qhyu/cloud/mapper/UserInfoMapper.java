@@ -1,10 +1,10 @@
 package com.qhyu.cloud.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.qhyu.cloud.model.SkyworthUser;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
 
 /**
  * All rights Reserved, Designed By http://xnky.travelsky.net/ <br>
@@ -20,7 +20,7 @@ import java.util.List;
 //@CacheNamespace
 public interface UserInfoMapper extends BaseMapper<SkyworthUser> {
 
-    List<SkyworthUser> getAll();
+    IPage<SkyworthUser> getAll(IPage<SkyworthUser> page);
 
     void updateId(@Param("id") String id,@Param("flag") int flag);
 }
