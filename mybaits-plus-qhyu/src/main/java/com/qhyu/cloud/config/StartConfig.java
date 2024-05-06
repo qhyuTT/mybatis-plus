@@ -2,8 +2,13 @@ package com.qhyu.cloud.config;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.github.pagehelper.PageInterceptor;
+import com.qhyu.cloud.interceptor.DecryptInterceptor;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,7 +33,7 @@ public class StartConfig {
      * 在MapperScan里面没有找到xml的解析逻辑呢，好像是扫描路径把mapper接口让spring registry管理
      *
      */
-    //@Bean
+    @Bean
     public LogQueryAndUpdateSqlHandler1 getLogSqlHandler1() {
         return new LogQueryAndUpdateSqlHandler1(true);
     }
@@ -37,7 +42,7 @@ public class StartConfig {
         return new LogQueryAndUpdateSqlHandler(true);
     }
 
-   // @Bean
+    //@Bean
     public PageInterceptor pageInterceptor() {
         return new PageInterceptor();
     }
@@ -45,7 +50,18 @@ public class StartConfig {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
+            @Override
+            public Expression getTenantId() {
+                return new LongValue(1);
+            }
+        }));
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         return interceptor;
+    }
+
+    @Bean
+    public DecryptInterceptor decryptInterceptor(){
+        return new DecryptInterceptor();
     }
 }

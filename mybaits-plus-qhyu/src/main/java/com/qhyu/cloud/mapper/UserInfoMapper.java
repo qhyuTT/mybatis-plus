@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.qhyu.cloud.model.SkyworthUser;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.cursor.Cursor;
 
 
 /**
@@ -21,6 +22,9 @@ import org.apache.ibatis.annotations.Param;
 public interface UserInfoMapper extends BaseMapper<SkyworthUser> {
 
     IPage<SkyworthUser> getAll(IPage<SkyworthUser> page);
+
+    //@Options(resultSetType = ResultSetType.FORWARD_ONLY, fetchSize = 100)
+    Cursor<SkyworthUser> getAll();
 
     void updateId(@Param("id") String id,@Param("flag") int flag);
 }

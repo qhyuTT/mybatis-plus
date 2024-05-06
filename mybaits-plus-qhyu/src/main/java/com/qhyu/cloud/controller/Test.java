@@ -1,6 +1,5 @@
 package com.qhyu.cloud.controller;
 
-import com.qhyu.cloud.service.impl.UserServiceImpl;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,8 +16,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Test {
 
-    public void setUserServiceImpl(UserServiceImpl userServiceImpl) {
-
-    }
+//    public void setUserServiceImpl(UserServiceImpl userServiceImpl) {
+//
+//    }
 
 }

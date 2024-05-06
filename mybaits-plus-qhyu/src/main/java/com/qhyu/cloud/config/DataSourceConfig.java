@@ -3,6 +3,9 @@ package com.qhyu.cloud.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -35,14 +38,15 @@ public class DataSourceConfig {
     }
 
     // 执行sql的模版类
-    /*@Bean
+    @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource){
         return new JdbcTemplate(dataSource);
-    }*/
+    }
 
     // 事务管理器，也就是说事物的提交这些都是他去管理的，我们可以测试一个
-   /* @Bean
+    // 里面使用的是DataSourceTransactionManager是Spring的。
+    @Bean
     public PlatformTransactionManager platformTransactionManager(DataSource dataSource){
         return new DataSourceTransactionManager(dataSource);
-    }*/
+    }
 }

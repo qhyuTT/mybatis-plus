@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qhyu.cloud.mapper.UserInfoMapper;
 import com.qhyu.cloud.model.SkyworthUser;
 import com.qhyu.cloud.service.UserService;
+import org.apache.ibatis.cursor.Cursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * All rights Reserved, Designed By http://xnky.travelsky.net/ <br>
@@ -35,12 +37,16 @@ public class UserServiceImpl implements UserService {
         userInfoMapper.updateId(id,flag);
     }
 
+    @Transactional
     public void getAll(){
+
         // 为什么我的分页实效了？
         // 然后我观察我的sql都是select * from ，而且sql没有加条数限制。我初步怀疑是生成语句的时候没给我生成？
         // 但是我觉得可能是执行分页的时候才加
         Page<SkyworthUser> objects =Page.of(1,10);
         IPage<SkyworthUser> all = userInfoMapper.getAll(objects);
+        Cursor<SkyworthUser> all1 = userInfoMapper.getAll();
+        all1.forEach(a -> System.out.println(a.toString()));
         System.out.println(all.getRecords().size());
     }
 

@@ -52,6 +52,47 @@ public class MybatisPlusInterceptor implements Interceptor {
     @Setter
     private List<InnerInterceptor> interceptors = new ArrayList<>();
 
+    /**
+     * 在 Mybatis Plus 中，**Executor** 和 **StatementHandler** 是两个重要的概念，它们都用于执行 SQL 语句。但是，它们之间存在一些重要的区别。
+     *
+     * **Executor** 负责执行 SQL 语句的生命周期管理。它负责创建、准备、执行和关闭与数据库的连接。Executor 还负责处理事务和缓存。
+     *
+     * **StatementHandler** 负责将 SQL 语句转换为 JDBC 语句并传递给 Executor 执行。它还负责设置 SQL 语句的参数。
+     *
+     * **Executor 和 StatementHandler 的关系**
+     *
+     * Executor 和 StatementHandler 之间的关系可以概括为以下几点：
+     *
+     * * StatementHandler 是 Executor 的一个依赖项。Executor 在执行 SQL 语句之前，需要先从 StatementHandler 获取 SQL 语句和参数。
+     * * StatementHandler 的职责是将 SQL 语句转换为 JDBC 语句并传递给 Executor 执行。Executor 负责执行 SQL 语句并将结果返回给应用程序。
+     * * Executor 和 StatementHandler 可以相互协作，完成 SQL 语句的执行。
+     *
+     * **Executor 的类型**
+     *
+     * Mybatis Plus 提供了三种类型的 Executor：
+     *
+     * * **SimpleExecutor**：最简单的 Executor，每次执行 SQL 语句都会创建一个新的连接。
+     * * **ReuseExecutor**：会缓存连接，并重用已有的连接来执行 SQL 语句。
+     * * **BatchExecutor**：用于批量执行 SQL 语句。
+     *
+     * **StatementHandler 的类型**
+     *
+     * Mybatis Plus 提供了两种类型的 StatementHandler：
+     *
+     * * **SimpleStatementHandler**：最简单的 StatementHandler，将 SQL 语句直接转换为 JDBC 语句。
+     * * **PreparedStatementHandler**：使用 JDBC 的 PreparedStatement 来执行 SQL 语句，可以提高性能。
+     *
+     * **总结**
+     *
+     * Executor 和 StatementHandler 都是 Mybatis Plus 中重要的概念，它们都用于执行 SQL 语句。Executor 负责执行 SQL 语句的生命周期管理，StatementHandler 负责将 SQL 语句转换为 JDBC 语句并传递给 Executor 执行。Executor 和 StatementHandler 可以相互协作，完成 SQL 语句的执行。
+     *
+     * **以下是一些额外的信息：**
+     *
+     * * Executor 和 StatementHandler 可以通过配置文件或 Java 代码进行配置。
+     * * Mybatis Plus 还提供了一些扩展的 Executor 和 StatementHandler，可以满足更复杂的场景需求。
+     *
+     * **希望这些信息对您有所帮助。**
+     */
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget();
@@ -75,6 +116,7 @@ public class MybatisPlusInterceptor implements Interceptor {
                     if (!query.willDoQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql)) {
                         return Collections.emptyList();
                     }
+                    // 这里是否确实改了sql，在多租户的模式下。我猜测就是这里加的sql
                     query.beforeQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql);
                 }
                 CacheKey cacheKey = executor.createCacheKey(ms, parameter, rowBounds, boundSql);
@@ -99,6 +141,7 @@ public class MybatisPlusInterceptor implements Interceptor {
                 Connection connections = (Connection) args[0];
                 Integer transactionTimeout = (Integer) args[1];
                 for (InnerInterceptor innerInterceptor : interceptors) {
+                    // 所以我这里感觉实现这个逻辑也可以打印sql信息
                     innerInterceptor.beforePrepare(sh, connections, transactionTimeout);
                 }
             }

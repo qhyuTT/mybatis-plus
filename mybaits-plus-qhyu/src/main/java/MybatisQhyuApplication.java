@@ -1,4 +1,5 @@
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.qhyu.cloud.annotation.PsiPage;
 import com.qhyu.cloud.config.StartConfig;
 import com.qhyu.cloud.dynamic.DynamicInterface;
 import com.qhyu.cloud.mapper.AirBaseMapper;
@@ -23,9 +24,9 @@ public class MybatisQhyuApplication {
         // 初始化容器用的
         AnnotationConfigApplicationContext annotationConfigApplicationContext =
             new AnnotationConfigApplicationContext(StartConfig.class);
-        //transactionManager(annotationConfigApplicationContext);
+        transactionManager(annotationConfigApplicationContext);
         //dynamicTest(annotationConfigApplicationContext);
-        pageTest(annotationConfigApplicationContext);
+        //pageTest(annotationConfigApplicationContext);
     }
 
     private static void pageTest(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
@@ -42,6 +43,7 @@ public class MybatisQhyuApplication {
         UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
         AirBaseMapper airBaseMapper = annotationConfigApplicationContext.getBean(AirBaseMapper.class);
         LambdaQueryChainWrapper<AirBase> airBaseLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(airBaseMapper);
+        airBaseLambdaQueryChainWrapper.like(AirBase::getBaseCode, "C").last(" order by base_code ").page(new PsiPage<>(1,10));
         Long one = airBaseLambdaQueryChainWrapper.count();
         SkyworthUser userInfoById = bean.getUserInfoById("0381321c-089b-43ef-b5d5-e4556c5670e9");
         if (userInfoById.getIsFirstLogin() == 0){

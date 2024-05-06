@@ -125,14 +125,15 @@ public class PaginationInnerInterceptor implements InnerInterceptor {
             countSql = countMs.getBoundSql(parameter);
         } else {
             countMs = buildAutoCountMappedStatement(ms);
-            // 在这里进行了优化
+            // 在这里进行了优化，同时count sql在这里被组装好 也就是select count(*)
             String countSqlStr = autoCountSql(page, boundSql.getSql());
             PluginUtils.MPBoundSql mpBoundSql = PluginUtils.mpBoundSql(boundSql);
             countSql = new BoundSql(countMs.getConfiguration(), countSqlStr, mpBoundSql.parameterMappings(), parameter);
             PluginUtils.setAdditionalParameter(countSql, mpBoundSql.additionalParameters());
         }
-
+        // 生成cacheKey 应该就是后续如果使用缓存的时候直接从cacheKey中获取，查询的时候会设置CacheKey
         CacheKey cacheKey = executor.createCacheKey(countMs, parameter, rowBounds, countSql);
+        // 这里会到Executor的逻辑里面去。executor是一个属性值，不是一个代理对象。这里会执行一遍sql。
         List<Object> result = executor.query(countMs, parameter, rowBounds, resultHandler, cacheKey, countSql);
         long total = 0;
         if (CollectionUtils.isNotEmpty(result)) {

@@ -130,7 +130,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
                                         ObjectProvider<List<MybatisPlusPropertiesCustomizer>> mybatisPlusPropertiesCustomizerProvider,
                                         ApplicationContext applicationContext) {
         this.properties = properties;
-        // interceptors的获取
+        // interceptors的获取，这个是不是就是我们注册的插件？但是mybatis Plus如果没有把主体的插件注入他是怎么查询的呢
         this.interceptors = interceptorsProvider.getIfAvailable();
         this.typeHandlers = typeHandlersProvider.getIfAvailable();
         this.languageDrivers = languageDriversProvider.getIfAvailable();
@@ -169,7 +169,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
         if (StringUtils.hasText(this.properties.getConfigLocation())) {
             factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
         }
-        // 这里设置了configuration
+        // 这里设置了configuration为mybatis plus重写的配置MybatisConfiguration
         applyConfiguration(factory);
         if (this.properties.getConfigurationProperties() != null) {
             factory.setConfigurationProperties(this.properties.getConfigurationProperties());

@@ -508,6 +508,7 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
             });
         }
 
+        // 这里就是注册插件，插件就是拦截器。我记得Configuration类在查询的时候都会从里面获取信息。
         if (!isEmpty(this.plugins)) {
             Stream.of(this.plugins).forEach(plugin -> {
                 targetConfiguration.addInterceptor(plugin);

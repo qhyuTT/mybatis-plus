@@ -126,6 +126,7 @@ public class MybatisConfiguration extends Configuration {
      */
     @Override
     public <T> void addMapper(Class<T> type) {
+        // 在MapperFactoryBean中的checkDaoConfig方法会被调用。里面主要是解析和注册
         mybatisMapperRegistry.addMapper(type);
     }
 
